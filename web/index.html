@@ -23,7 +23,7 @@
                 marker.setVisible(false);
 
                 console.log("Running on AutobahnJS ", autobahn.version);
-                var wsuri = "ws://127.0.0.1:8080/ws";
+                var wsuri = "ws://178.62.87.204:8080/ws";
                 var connection = new autobahn.Connection({url: wsuri, realm: "realm1"});
 
                 connection.onopen = function (session, details) {
