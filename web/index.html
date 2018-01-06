@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuSsqq7Bbp3rPWDAW0fS3lStqyMJ5kSrA"></script>
+        <script>
+            function loadMap() {
+                var defaultLatLon = new google.maps.LatLng(0, 0);
+                var mapOptions = {
+                    center: defaultLatLon,
+                    zoom: 16,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    disableDefaultUI: true
+                };
+                var map = new google.maps.Map(document.getElementById("mapContainer"), mapOptions);
+                var marker = new google.maps.Marker({
+                    position: defaultLatLon,
+                    map: map,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 6
+                    }
+                });
+                marker.setVisible(false);
+
+                console.log("Running on AutobahnJS ", autobahn.version);
+                var wsuri = "ws://127.0.0.1:8080/ws";
+                var connection = new autobahn.Connection({url: wsuri, realm: "realm1"});
+
+                connection.onopen = function (session, details) {
+                    console.log("Connected: ", details);
+                    function on_location (args) {
+                        var latLon = new google.maps.LatLng(args[0], args[1]);
+                        if (!marker.getVisible()) {
+                            map.panTo(latLon);
+                            marker.setVisible(true);
+                        }
+                        marker.setPosition(latLon);
+                    }
+                    session.subscribe('com.om26er.location', on_location).then(
+                        function (sub) {
+                            console.log('subscribed to topic', sub);
+                        },
+                        function (err) {
+                            console.log('failed to subscribe to topic', err);
+                        }
+                    );
+                };
+                connection.open();
+            }
+        </script>
+    </head>
+    <body onload="loadMap()">
+        <h1>Live Google Map Tracking</h1>
+        <script>AUTOBAHN_DEBUG=false;</script>
+        <script src="js/autobahn.min.js"></script>
+        <div id="mapContainer" style="width:100%; height:500px;"></div>
+    </body>
+</html>
