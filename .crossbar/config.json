@@ -36,7 +36,7 @@
                     "type": "universal",
                     "endpoint": {
                         "type": "tcp",
-                        "port": 9000
+                        "port": 8080
                     },
                     "rawsocket": {
                     },
